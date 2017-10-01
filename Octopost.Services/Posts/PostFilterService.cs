@@ -1,8 +1,11 @@
 ﻿namespace Octopost.Services.Posts
 {
+    using Octopost.Model.ApiResponse.HTTP400;
     using Octopost.Model.Data;
     using Octopost.Model.Dto;
     using Octopost.Model.Extensions;
+    using Octopost.Model.Validation;
+    using Octopost.Services.Exceptions;
     using Octopost.Services.UoW;
     using System;
     using System.Collections.Generic;
@@ -26,7 +29,10 @@
             {
                 var postRepository = unitOfWork.CreateEntityRepository<Post>();
                 var queried = postRepository.Query().Where(x => x.Created >= from && x.Created <= to).OrderBy(x => x.Created);
-                return this.Filter(unitOfWork, queried, page, pageSize).OrderByDescending(x => x.Created);
+                var filtered = this.Filter(queried, page, pageSize)
+                    .OrderByDescending(x => x.Created)
+                    .ThenByDescending(x => x.VoteCount);
+                return filtered;
             }
         }
 
@@ -37,7 +43,10 @@
                 var posts = unitOfWork.CreateEntityRepository<Post>()
                     .Query()
                     .Where(x => tag.Contains(x.Topic));
-                return this.Filter(unitOfWork, posts, page, pageSize).OrderBy(x => x.VoteCount);
+                var filtered = this.Filter(posts, page, pageSize)
+                    .OrderByDescending(x => x.VoteCount)
+                    .ThenByDescending(x => x.Created);
+                return filtered;
             }
         }
 
@@ -46,23 +55,42 @@
             using (var unitOfWork = this.unitOfWorkFactory.CreateUnitOfWork())
             {
                 var posts = unitOfWork.CreateEntityRepository<Post>().Query();
-                return this.Filter(unitOfWork, posts, page, pageSize).OrderByDescending(x => x.VoteCount);
+                var filtered = this.Filter(posts, page, pageSize)
+                    .OrderByDescending(x => x.VoteCount)
+                    .ThenByDescending(x => x.Created);
+                return filtered;
             }
         }
 
-        private IEnumerable<PostDto> Filter(
-            IUnitOfWork unitOfWork, 
+        private PostDto[] Filter(
             IQueryable<Post> posts, 
             int page, 
             int pageSize)
         {
-            var paged = this.Page(posts, page, pageSize).AsEnumerable();
-            foreach (var pagedItem in paged)
+            if (pageSize < 1)
             {
-                var mapped = pagedItem.MapTo<PostDto>();
-                mapped.VoteCount = this.voteCountService.CountVotes(mapped.Id);
-                yield return mapped;
+                throw new ApiException(x => x.BadRequestResult(
+                    (ErrorCode.Parse(ErrorCodeType.OutOfRange, OctopostEntityName.Filter, PropertyName.Filter.PageSize),
+                    new ErrorDefinition(pageSize, "Page size must be 1 or bigger", PropertyName.Filter.PageSize))));
             }
+
+            if (page < 0)
+            {
+                throw new ApiException(x => x.BadRequestResult(
+                    (ErrorCode.Parse(ErrorCodeType.OutOfRange, OctopostEntityName.Filter, PropertyName.Filter.PageNumber),
+                    new ErrorDefinition(page, "Page number cannot be negative", PropertyName.Filter.PageNumber))));
+            }
+
+            var paged = this.Page(posts, page, pageSize).ToArray();
+            var returnArray = new PostDto[paged.Length];
+            for (var i = 0; i < paged.Length; i++)
+            {
+                var mapped = paged[i].MapTo<PostDto>();
+                mapped.VoteCount = this.voteCountService.CountVotes(mapped.Id);
+                returnArray[i] = mapped;
+            }
+
+            return returnArray;
         }
 
         private IQueryable<T> Page<T>(IQueryable<T> queryable, int page, int pageSize) =>

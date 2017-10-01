@@ -1,7 +1,7 @@
 ﻿namespace Octopost.Validation.Dto.Newsletter
 {
-    using Octopost.Validation.Common;
     using Octopost.Model.Dto;
+    using Octopost.Validation.Common;
 
     public class PostDtoValidator : AbstractOctopostValidator<PostDto>
     {

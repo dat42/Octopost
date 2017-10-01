@@ -18,8 +18,8 @@
             using (var unitOfWork = this.unitOfWorkFactory.CreateUnitOfWork())
             {
                 var voteRepository = unitOfWork.CreateEntityRepository<Vote>();
-                var voteCount = voteRepository.Query().Where(x => x.PostId == postId)
-                    .Aggregate(0, (current, vote) => vote.State == VoteState.Down ? current - 1 : current + 1);
+                var votes = voteRepository.Query().Where(x => x.PostId == postId).ToArray();
+                var voteCount = votes.Aggregate(0, (current, vote) => vote.State == VoteState.Down ? current - 1 : current + 1);
                 return voteCount;
             }
         }

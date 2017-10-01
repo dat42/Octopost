@@ -1,30 +1,40 @@
 ﻿namespace Octopost.Services.UoW
 {
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.EntityFrameworkCore.ChangeTracking;
     using Octopost.DataAccess.Context;
     using Octopost.Model.Data;
+    using Octopost.Services.BusinessRules.Interfaces;
+    using Octopost.Services.BusinessRules.Registry.Interfaces;
     using Octopost.Services.Repository;
     using System;
     using System.Collections.Generic;
+    using System.Linq;
 
     public class UnitOfWork : IUnitOfWork
     {
         private readonly OctopostDbContext octopostDbContext;
 
+        private readonly Lazy<ChangeTracker> changeTracker;
+
+        private readonly IBusinessRuleRegistry businessRuleRegistry;
+
         private readonly string connectionString;
 
         private readonly IDictionary<Type, Type> repositories = new Dictionary<Type, Type>();
 
-        public UnitOfWork(string connectionString)
+        public UnitOfWork(string connectionString, IBusinessRuleRegistry businessRuleRegistry)
         {
             this.RegisterRepositories();
             this.connectionString = connectionString;
             this.octopostDbContext = this.CreateContext();
+            this.businessRuleRegistry = businessRuleRegistry;
+            this.changeTracker = new Lazy<ChangeTracker>(() => new ChangeTracker(this.octopostDbContext));
         }
 
         public IRepository<T> CreateEntityRepository<T>()
         {
-            if (this.repositories.ContainsKey(typeof(T)))
+            if (!this.repositories.ContainsKey(typeof(T)))
             {
                 throw new ArgumentException($"No repository for type {typeof(T).FullName} registered");
             }
@@ -36,14 +46,50 @@
         public void Dispose() =>
             this.octopostDbContext.Dispose();
 
-        public void Save() =>
+        public void Save()
+        {
+            var changeTrackerValue = this.changeTracker.Value;
+            var businessRules = this.ExecutePreSaveBusinessRules(changeTrackerValue);
             this.octopostDbContext.SaveChanges();
+            this.ExecutePostSaveBusinessRules(businessRules);
+        }
 
         private OctopostDbContext CreateContext()
         {
             var optionsBuilder = new DbContextOptionsBuilder<OctopostDbContext>();
             optionsBuilder.UseSqlServer(this.connectionString);
             return new OctopostDbContext(optionsBuilder.Options);
+        }
+
+        private IEnumerable<IBusinessRuleBase> ExecutePreSaveBusinessRules(ChangeTracker changeTracker)
+        {
+            var list = new List<IBusinessRuleBase>();
+            foreach (var changedEntityGroup in changeTracker.Entries().GroupBy(x => x.Entity.GetType()))
+            {
+                var addedIds = changedEntityGroup.Where(x => x.State == EntityState.Added).Select(x => x.Entity);
+                var changedIds = changedEntityGroup.Where(x => x.State == EntityState.Modified).Select(x => x.Entity);
+                var removedIds = changedEntityGroup.Where(x => x.State == EntityState.Deleted).Select(x => x.Entity);
+                var businessRulesToExecute = this.businessRuleRegistry.GetBusinessRulesFor(changedEntityGroup.Key);
+                foreach (var businessRule in businessRulesToExecute)
+                {
+                    var instantiatedBusinessRule = this.businessRuleRegistry.InstantiateBusinessRule(businessRule, this);
+                    instantiatedBusinessRule.PreSave(
+                        addedIds.ToList(),
+                        changedIds.ToList(),
+                        removedIds.ToList());
+                    list.Add(instantiatedBusinessRule);
+                }
+            }
+
+            return list;
+        }
+
+        private void ExecutePostSaveBusinessRules(IEnumerable<IBusinessRuleBase> businessRulesToExecute)
+        {
+            foreach (var businessRule in businessRulesToExecute)
+            {
+                businessRule.PostSave(this);
+            }
         }
 
         private void RegisterRepositories()

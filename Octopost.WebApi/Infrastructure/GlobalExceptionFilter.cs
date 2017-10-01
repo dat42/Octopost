@@ -29,6 +29,7 @@
                 var apiResult = exception.ApiResult;
                 context.Result = apiResult.GetResultObject();
             };
+
             if (context.Exception is ApiException ex)
             {
                 SetException(ex);

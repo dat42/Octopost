@@ -8,7 +8,7 @@
         [FromQuery(Name = "tags")]
         public string Tags { get; set; }
 
-        [FromQuery(Name = "pageNumber")]
+        [FromQuery(Name = "page")]
         public int PageNumber { get; set; }
 
         [FromQuery(Name = "pageSize")]

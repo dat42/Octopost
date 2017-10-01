@@ -1,10 +1,9 @@
-﻿using Octopost.Model.Validation;
-using Octopost.Services.ApiResult;
-
-namespace Octopost.WebApi.Controllers
+﻿namespace Octopost.WebApi.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
     using Octopost.Model.Dto;
+    using Octopost.Model.Validation;
+    using Octopost.Services.ApiResult;
     using Octopost.Services.Posts;
 
     [Route("api/Posts")]
@@ -21,7 +20,7 @@ namespace Octopost.WebApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreatePost(CreatePostDto createPostDto)
+        public IActionResult CreatePost([FromBody] CreatePostDto createPostDto)
         {
             var id = this.postCreationService.CreatePost(createPostDto);
             return this.apiResultService.Created(OctopostEntityName.Post, id);

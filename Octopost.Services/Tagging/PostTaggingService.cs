@@ -6,7 +6,7 @@
     {
         public string PredictTag(string text)
         {
-            throw new NotImplementedException();
+            return "Architecture";
         }
     }
 }

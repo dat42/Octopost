@@ -1,14 +1,11 @@
 ﻿namespace Octopost.Services.Votes
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
+    using Octopost.Model.ApiResponse.HTTP400;
     using Octopost.Model.Data;
+    using Octopost.Model.Validation;
+    using Octopost.Services.Exceptions;
     using Octopost.Services.UoW;
     using System.Linq;
-    using Octopost.Services.Exceptions;
-    using Octopost.Model.Validation;
-    using Octopost.Model.ApiResponse.HTTP400;
 
     public class VoteService : IVoteService
     {

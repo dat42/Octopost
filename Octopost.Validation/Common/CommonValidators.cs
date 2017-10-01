@@ -14,6 +14,13 @@
             Expression<Func<T, string>> textSelector)
         {
             validator.RuleFor(textSelector)
+                .Must(x => !string.IsNullOrEmpty(x))
+                .WithErrorCode(ErrorCode.Parse(
+                    ErrorCodeType.PropertyDataNullOrEmpty,
+                    OctopostEntityName.Post,
+                    PropertyName.Post.Text).Code)
+                .WithMessage("Text cannot be empty");
+            validator.RuleFor(textSelector)
                 .MinimumLength(20)
                 .WithErrorCode(ErrorCode.Parse(
                     ErrorCodeType.PropertyInvalidData,

@@ -1,13 +1,13 @@
 ﻿namespace Octopost.WebApi.Infrastructure.Middleware
 {
-    using Octopost.Model.Validation;
-    using Octopost.Services;
-    using Octopost.Services.ApiResult;
     using Microsoft.AspNetCore.Http;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.Extensions.DependencyInjection;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Serialization;
+    using Octopost.Model.Validation;
+    using Octopost.Services;
+    using Octopost.Services.ApiResult;
     using System.Threading.Tasks;
 
     public class NotFoundMiddleware

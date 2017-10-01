@@ -75,10 +75,5 @@
 
         public override int GetHashCode() =>
             this.Code.GetHashCode();
-
-        public static object Parse(object invalidGrant)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

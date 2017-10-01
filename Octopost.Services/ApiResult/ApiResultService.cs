@@ -1,5 +1,7 @@
 ﻿namespace Octopost.Services.ApiResult
 {
+    using FluentValidation.Results;
+    using Microsoft.AspNetCore.Mvc;
     using Octopost.Model.ApiResponse;
     using Octopost.Model.ApiResponse.HTTP200;
     using Octopost.Model.ApiResponse.HTTP201;
@@ -10,9 +12,7 @@
     using Octopost.Model.ApiResponse.HTTP404;
     using Octopost.Model.ApiResponse.HTTP500;
     using Octopost.Model.Validation;
-    using Microsoft.AspNetCore.Mvc;
     using System;
-    using FluentValidation.Results;
     using System.Collections.Generic;
     using System.Linq;
 

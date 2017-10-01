@@ -4,13 +4,13 @@
 
     public class PropertyName : IEquatable<PropertyName>
     {
+        public static readonly PropertyName Empty = new PropertyName("NONE");
+
         internal PropertyName(string propertyName) =>
             this.Name = propertyName;
 
         public string Name { get; }
-
-        public static readonly PropertyName Empty = new PropertyName("NONE");
-
+        
         public static implicit operator string(PropertyName name) =>
             name.Name;
 
@@ -49,6 +49,13 @@
             public static readonly PropertyName Id = new PropertyName("ID");
 
             public static readonly PropertyName VoteState = new PropertyName("STATE");
+        }
+
+        public static class Filter
+        {
+            public static readonly PropertyName PageSize = new PropertyName("PAGE_SIZE");
+
+            public static readonly PropertyName PageNumber = new PropertyName("PAGE");
         }
     }
 }

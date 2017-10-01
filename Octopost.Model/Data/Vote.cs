@@ -11,7 +11,7 @@
 
         public Post Post { get; set; }
 
-        public  VoteState State { get; set; }
+        public VoteState State { get; set; }
 
         public DateTime Created { get; set; }
     }

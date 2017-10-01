@@ -1,7 +1,7 @@
 ﻿namespace Octopost.Validation.Data.Newsletter
 {
-    using Octopost.Validation.Common;
     using Octopost.Model.Data;
+    using Octopost.Validation.Common;
 
     public class PostValidator : AbstractOctopostValidator<Post>
     {

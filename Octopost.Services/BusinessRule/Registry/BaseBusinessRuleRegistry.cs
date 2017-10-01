@@ -1,5 +1,6 @@
 ﻿namespace Octopost.Services.BusinessRules.Registry
 {
+    using Microsoft.Extensions.DependencyInjection;
     using Octopost.Services.Assembly;
     using Octopost.Services.BusinessRules.Interfaces;
     using Octopost.Services.BusinessRules.Registry.Interfaces;
@@ -28,12 +29,12 @@
         public IDictionary<Type, IList<Type>> RegisteredEntries => 
             this.registeredEntries;
 
-        public virtual void RegisterEntries()
+        public void RegisterEntries()
         {
             var octopostAssemblies = this.assemblyContainer.GetAssemblies();
-            foreach (var OctopostAssembly in octopostAssemblies)
+            foreach (var octopostAssembly in octopostAssemblies)
             {
-                var types = OctopostAssembly.GetTypes();
+                var types = octopostAssembly.GetTypes();
                 var businessRules = types.Where(x => x.GetInterfaces().Contains(typeof(IBusinessRuleBase)) && !x.IsInterface);
                 foreach (var businessRule in businessRules)
                 {
@@ -82,19 +83,6 @@
             return (IBusinessRuleBase)instantiated;
         }
 
-        private void RegisterEntry(Type entityType, Type businessRuleType)
-        {
-            this.ThrowIfInvalidBusinessRule(businessRuleType);
-            if (!this.registeredEntries.ContainsKey(entityType))
-            {
-                this.registeredEntries.Add(entityType, new List<Type>());
-                this.registeredEntries[entityType].Add(businessRuleType);
-                return;
-            }
-
-            this.registeredEntries[entityType].Add(businessRuleType);
-        }
-
         public void TriggerPreSaveBusinessRulesFor<TEntity>(IUnitOfWork unitOfWork, IList<TEntity> added, IList<TEntity> changed, IList<TEntity> removed)
         {
             var rules = this.GetBusinessRulesFor<TEntity>();
@@ -124,6 +112,19 @@
             {
                 throw new ArgumentException($"The business rule '{t.FullName}' must implement '{typeof(IBusinessRuleBase).FullName}'.");
             }
+        }
+
+        private void RegisterEntry(Type entityType, Type businessRuleType)
+        {
+            this.ThrowIfInvalidBusinessRule(businessRuleType);
+            if (!this.registeredEntries.ContainsKey(entityType))
+            {
+                this.registeredEntries.Add(entityType, new List<Type>());
+                this.registeredEntries[entityType].Add(businessRuleType);
+                return;
+            }
+
+            this.registeredEntries[entityType].Add(businessRuleType);
         }
     }
 }

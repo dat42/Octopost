@@ -5,6 +5,7 @@
     using Octopost.Services.ApiResult;
     using Octopost.Services.Posts;
     using Octopost.Validation.Dto.Post;
+    using System;
     using System.Linq;
 
     [Route("api/Posts")]
@@ -21,7 +22,7 @@
         }
 
         [HttpGet("Tags")]
-        public IActionResult FilterPosts(FilterPostByTagDto dto)
+        public IActionResult FilterByTags(FilterPostByTagDto dto)
         {
             var separated = dto.Tags.Split(',').Select(x => x.Trim()).ToArray();
             var result = this.postFilterService.FilterByTag(separated, dto.PageNumber, dto.PageSize);
@@ -29,9 +30,16 @@
         }
 
         [HttpGet("Votes")]
-        public IActionResult FilterPosts(FilterPostsByVotesDto dto)
+        public IActionResult FilterByVotes(PagedDto dto)
         {
             var result = this.postFilterService.FilterByVotes(dto.PageNumber, dto.PageSize);
+            return this.apiResultService.Ok(result);
+        }
+
+        [HttpGet("Newest")]
+        public IActionResult GetNewest(PagedDto dto)
+        {
+            var result = this.postFilterService.FilterByDate(DateTime.MinValue, DateTime.MaxValue, dto.PageNumber, dto.PageSize);
             return this.apiResultService.Ok(result);
         }
     }

@@ -4,6 +4,7 @@
     {
         Post,
         Vote,
+        Filter,
         Unspecified
     }
 }

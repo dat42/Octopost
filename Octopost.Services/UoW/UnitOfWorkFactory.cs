@@ -1,5 +1,6 @@
 ﻿namespace Octopost.Services.UoW
 {
+    using Octopost.Services.BusinessRules.Registry.Interfaces;
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -9,16 +10,19 @@
         private readonly Dictionary<DateTime, IUnitOfWork> createdUnitOfWorks = 
             new Dictionary<DateTime, IUnitOfWork>();
 
+        private readonly IBusinessRuleRegistry businessRuleRegistry;
+
         private readonly string connectionString;
 
-        public UnitOfWorkFactory(string connectionString)
+        public UnitOfWorkFactory(string connectionString, IBusinessRuleRegistry businessRuleRegistry)
         {
             this.connectionString = connectionString;
+            this.businessRuleRegistry = businessRuleRegistry;
         }
 
         public IUnitOfWork CreateUnitOfWork()
         {
-            var unitOfWork = new UnitOfWork(this.connectionString);
+            var unitOfWork = new UnitOfWork(this.connectionString, this.businessRuleRegistry);
             this.createdUnitOfWorks.Add(DateTime.Now, unitOfWork);
             return unitOfWork;
         }
