@@ -2,6 +2,9 @@
   <textarea mdInput placeholder="Post text" [(ngModel)]="postText"></textarea>
 </md-form-field>
 <div class="octopost--create--buttons--container">
-  <button class="octopost--create--buttons" md-button (click)="closeDialog()">Cancel</button>
-  <button class="octopost--create--buttons" md-button (click)="createPost()">Create</button>
+  <div class="loading--container">
+      <mat-progress-spinner class="loading" *ngIf="isLoading" mode="indeterminate"></mat-progress-spinner>
+  </div>
+  <button class="octopost--create--buttons" [disabled]="isLoading" md-button (click)="closeDialog()"><i class="material-icons">cancel</i></button>
+  <button class="octopost--create--buttons" [disabled]="isLoading" md-button (click)="createPost()"><i class="material-icons">create</i></button>
 </div>

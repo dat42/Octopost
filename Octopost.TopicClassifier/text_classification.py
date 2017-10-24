@@ -9,6 +9,10 @@ import numpy as np
 import pandas
 import tensorflow as tf
 
+from flask import Flask
+from flask import jsonify
+from flask import request
+
 FLAGS = None
 MAX_DOCUMENT_LENGTH = 10
 EMBEDDING_SIZE = 50
@@ -57,10 +61,6 @@ def rnn_model(features, labels, mode):
 
 def main(args):
     global n_words
-    to_predict = None
-    if len(args) > 2:
-        to_predict = args[2]
-        print(to_predict)
     dbpedia = tf.contrib.learn.datasets.load_dataset('dbpedia', test_with_fake_data=FLAGS.test_with_fake_data)
     x_train = pandas.Series(dbpedia.train.data[:, 1])
     y_train = pandas.Series(dbpedia.train.target)
@@ -80,20 +80,23 @@ def main(args):
 
     # Build model
     model_fn = rnn_model
-    classifier = tf.estimator.Estimator(model_fn=model_fn)
+    classifier = tf.estimator.Estimator(model_fn=model_fn, model_dir='./model')
 
     # Train.
-    summary_hook = tf.train.SummarySaverHook(
-        save_secs=2,
-        output_dir='./data',
-        scaffold=tf.train.Scaffold())
-    train_input_fn = tf.estimator.inputs.numpy_input_fn(
-        x={WORDS_FEATURE: x_train},
-        y=y_train,
-        batch_size=len(x_train),
-        num_epochs=None,
-        shuffle=True)
-    classifier.train(input_fn=train_input_fn, steps=100000, hooks=[summary_hook])
+    if not FLAGS.server:
+        print('Training model...')
+        summary_hook = tf.train.SummarySaverHook(
+            save_secs=2,
+            output_dir='./data',
+            scaffold=tf.train.Scaffold())
+        train_input_fn = tf.estimator.inputs.numpy_input_fn(
+            x={WORDS_FEATURE: x_train},
+            y=y_train,
+            batch_size=len(x_train),
+            num_epochs=None,
+            shuffle=True)
+
+        classifier.train(input_fn=train_input_fn, steps=10000, hooks=[summary_hook])
 
     # Predict.
     test_input_fn = tf.estimator.inputs.numpy_input_fn(
@@ -103,23 +106,57 @@ def main(args):
         shuffle=False)
 
     # Score with tensorflow.
-    scores = classifier.evaluate(input_fn=test_input_fn, steps=100000)
+    scores = classifier.evaluate(input_fn=test_input_fn, steps=10000)
     print('Accuracy (tensorflow): {0:f}'.format(scores['accuracy']))
+    def _predict(text):
+        text_to_predict = text
+        text_to_predict = pandas.Series(text_to_predict)
+        text_to_predict = vocab_processor.fit_transform(text_to_predict)
+        text_to_predict = np.array(list(text_to_predict))
+        test_fn = tf.estimator.inputs.numpy_input_fn(
+            x={WORDS_FEATURE: text_to_predict},
+            num_epochs=1,
+            shuffle=False)
+        prediction = list(classifier.predict(input_fn=test_fn))
+        predicted_classes = [p['class'] for p in prediction]
+        return predicted_classes
+    return _predict
 
-    text_to_predict = [
-        'BBZW is a swiss School. It is famous for its teacher and for its extraordinary students.'
-    ] if to_predict is None else to_predict
-    text_to_predict = pandas.Series(text_to_predict)
-    text_to_predict = vocab_processor.fit_transform(text_to_predict)
-    text_to_predict = np.array(list(text_to_predict))
-    test_fn = tf.estimator.inputs.numpy_input_fn(
-        x={WORDS_FEATURE: text_to_predict},
-        num_epochs=1,
-        shuffle=False)
-    prediction = list(classifier.predict(input_fn=test_fn))
-    predicted_classes = [p['class'] for p in prediction]
 
-    print('New Samples, Class Predictions: {}\n'.format(predicted_classes))
+def get_class_dictionary():
+    class_map = {}
+    classes_file = open('./dbpedia_data/dbpedia_csv/classes.txt', 'r')
+    i = 1
+    while True:
+        line = classes_file.readline()
+        if not line: break
+        class_map[i] = line.replace('\n', '')
+        i += 1
+    return class_map
+
+
+def start_server():
+    print('Starting web server...')
+    f = main([])
+    class_map = get_class_dictionary()
+    app = Flask(__name__)
+
+    @app.route('/classes')
+    def get_classes():
+        return jsonify(class_map)
+
+    @app.route('/prediction')
+    def predict_class():
+        text = request.args['text']
+        prediction = f(text)
+        print(prediction)
+        first = prediction[0]
+        return_obj = {}
+        return_obj['prediction_value'] = first.item()
+        return_obj['prediction_text'] = class_map[first.item()]
+        return jsonify(return_obj)
+
+    app.run(host='0.0.0.0', port=9001)
 
 
 if __name__ == '__main__':
@@ -130,9 +167,11 @@ if __name__ == '__main__':
         help='Test the example code with fake data.',
         action='store_true')
     parser.add_argument(
-        '--bow_model',
+        '--server',
         default=False,
-        help='Run with BOW model instead of RNN.',
-        action='store_true')
+        help='Determines whether to run the server')
     FLAGS, unparsed = parser.parse_known_args()
-    tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
+    if FLAGS.server:
+        start_server()
+    else:
+        tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)

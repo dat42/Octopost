@@ -8,7 +8,9 @@
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
     using Octopost.DataAccess.Context;
+    using Octopost.Model.Settings;
     using Octopost.Services;
     using Octopost.Services.ApiResult;
     using Octopost.Services.Assembly;
@@ -44,6 +46,10 @@
             // This instance needs to be created for the compiler to reference the Octopost.Validation assembly
             var instance = new PostDtoValidator();
 
+            services.AddOptions();
+            services.Configure<OctopostSettings>(this.Configuration.GetSection("OctopostSettings"));
+            services.AddSingleton<IConfiguration>(this.Configuration);
+            services.AddSingleton<OctopostSettings>(x => x.GetService<IOptions<OctopostSettings>>().Value);
             this.ConfigureAutomapper();
             var mvc = services.AddMvc(config =>
             {
@@ -90,7 +96,7 @@
             this.ConfigureBusinessRules(services);
             services.AddSingleton<IBusinessRuleRegistry, BaseBusinessRuleRegistry>();
             services.AddScoped<IPostCreationService, PostCreationService>();
-            services.AddScoped<IPostTaggingService, PostTaggingService>();
+            services.AddSingleton<IPostTaggingService, PostTaggingService>();
             services.AddScoped<IPostFilterService, PostFilterService>();
             services.AddScoped<IVoteCountService, VoteCountService>();
             services.AddScoped<IVoteService, VoteService>();

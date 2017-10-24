@@ -3,9 +3,21 @@
 }
 
 .octopost--create--buttons--container {
-    padding-left: 50px;
-    padding-right: 50px;
     text-align: right;
+}
+
+.loading--container {
+    position: relative;
+}
+
+.loading {
+    position: absolute;
+    left: 0;
+}
+
+mat-progress-spinner {
+    height: 36px;
+    display: inline-block;
 }
 
 textarea {

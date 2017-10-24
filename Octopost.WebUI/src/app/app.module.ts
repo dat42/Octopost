@@ -1,9 +1,20 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { NgModule, ErrorHandler } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
-import { MdButtonModule, MatToolbarModule, MatTabsModule, MatCardModule, MdInputModule, MdDialogModule } from '@angular/material';
+import { GlobalErrorHandler } from './global-error-handler';
+import {
+  MdButtonModule,
+  MatToolbarModule,
+  MatTabsModule,
+  MatCardModule,
+  MdInputModule,
+  MdDialogModule,
+  MatSnackBarModule,
+  MatProgressSpinnerModule,
+  MatChipsModule
+} from '@angular/material';
 
 import * as comp from './components';
 import * as serv from './services';
@@ -28,11 +39,22 @@ import * as serv from './services';
     MatCardModule,
     MdInputModule,
     FormsModule,
-    MdDialogModule
+    MdDialogModule,
+    MatSnackBarModule,
+    MatProgressSpinnerModule,
+    MatChipsModule
   ],
   providers: [
     serv.CreatePostService,
-    serv.OctopostHttpService
+    serv.OctopostHttpService,
+    {
+      provide: ErrorHandler,
+      useClass: GlobalErrorHandler
+    },
+    serv.SnackbarService,
+    serv.VoteService,
+    serv.FilterPostService,
+    serv.TagService
   ],
   entryComponents: [
     comp.CreatePostComponent

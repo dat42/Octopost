@@ -1,0 +1,23 @@
+.post--container {
+    background-color: #CFD8DC;
+    overflow: hidden;
+}
+
+.single--post {
+    margin-top: 5px;
+}
+
+.single--post:last-child {
+    margin-bottom: 5px;
+}
+
+.loading--container {
+    background-color: #CFD8DC;
+    width: 100%;
+}
+
+.loading {
+    margin: 0 auto;
+    width: 100%;
+    margin-top: 10px;
+}

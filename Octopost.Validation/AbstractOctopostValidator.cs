@@ -4,10 +4,8 @@
 
     public abstract class AbstractOctopostValidator<T> : AbstractValidator<T>
     {
-        public AbstractOctopostValidator()
-        {
+        public AbstractOctopostValidator() =>
             this.Initalize();
-        }
 
         protected abstract void Initalize();
     }

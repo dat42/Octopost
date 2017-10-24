@@ -1,3 +1,19 @@
-<p>
-  post works!
-</p>
+<div class="post--card">
+  <md-card>
+    <md-card-title-group>
+      <md-card-title>
+        {{post.topic}}
+      </md-card-title>
+      <md-card-subtitle>
+        {{post.created | date}}
+      </md-card-subtitle>
+    </md-card-title-group>
+    <md-card-content>
+      {{post.text}}
+      <md-card-actions>
+          <button md-button [disabled]="voted" (click)="downvote()"><i class="material-icons">thumb_down</i></button>
+          <button md-button [disabled]="voted" (click)="upvote()"><i class="material-icons">thumb_up</i></button>
+      </md-card-actions>
+    </md-card-content>
+  </md-card>
+</div>

@@ -1,7 +1,7 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, OnInit, Inject, EventEmitter, Output } from '@angular/core';
 import { MdDialogRef, MD_DIALOG_DATA } from '@angular/material';
 import { CreatePost } from '../../model';
-import { CreatePostService } from '../../services';
+import { CreatePostService, SnackbarService } from '../../services';
 
 @Component({
   selector: 'app-create-post',
@@ -10,11 +10,23 @@ import { CreatePostService } from '../../services';
 })
 export class CreatePostComponent implements OnInit {
 
+  private internalIsLoading = false;
   private internalPostText = '';
+
+  @Output() private postCreated = new EventEmitter<number>();
 
   constructor(
     public dialogRef: MdDialogRef<CreatePostComponent>,
-    private createPostService: CreatePostService) {
+    private createPostService: CreatePostService,
+    private snackbarService: SnackbarService) {
+  }
+
+  public get isLoading(): boolean {
+    return this.internalIsLoading;
+  }
+
+  public set isLoading(value: boolean) {
+    this.internalIsLoading = value;
   }
 
   public set postText(value: string) {
@@ -26,17 +38,24 @@ export class CreatePostComponent implements OnInit {
   }
 
   public onNoClick(): void {
-    this.dialogRef.close();
+    this.dialogRef.close(-1);
   }
 
   public closeDialog(): void {
-    this.dialogRef.close();
+    this.dialogRef.close(-1);
   }
 
   public async createPost(): Promise<void> {
-    const createPost = this.createCreatePostModel();
-    const id = await this.createPostService.createPost(createPost);
-    this.dialogRef.close(id);
+    try {
+      this.isLoading = true;
+      const createPost = this.createCreatePostModel();
+      const result = await this.createPostService.createPost(createPost);
+      this.dialogRef.close(result);
+      this.snackbarService.showMessage('Post created');
+      this.postCreated.emit(result);
+    } finally {
+      this.isLoading = false;
+    }
   }
 
   public ngOnInit(): void {

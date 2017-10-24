@@ -19,4 +19,7 @@ export class AppComponent {
     dialogRef.afterClosed().subscribe(result => {
     });
   }
+
+  public refresh(): void {
+  }
 }

@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Remove="Dto\FilterPostsByVotesDto.cs" />
+    <Compile Remove="Dto\Tagging\Classes.cs" />
   </ItemGroup>
   
   <ItemGroup>

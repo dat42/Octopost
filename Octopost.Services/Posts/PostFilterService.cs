@@ -1,5 +1,6 @@
 ﻿namespace Octopost.Services.Posts
 {
+    using Microsoft.EntityFrameworkCore;
     using Octopost.Model.ApiResponse.HTTP400;
     using Octopost.Model.Data;
     using Octopost.Model.Dto;
@@ -28,7 +29,7 @@
             using (var unitOfWork = this.unitOfWorkFactory.CreateUnitOfWork())
             {
                 var postRepository = unitOfWork.CreateEntityRepository<Post>();
-                var queried = postRepository.Query().Where(x => x.Created >= from && x.Created <= to).OrderBy(x => x.Created);
+                var queried = postRepository.Query().Where(x => x.Created >= from && x.Created <= to).OrderByDescending(x => x.Created);
                 var filtered = this.Filter(queried, page, pageSize)
                     .OrderByDescending(x => x.Created)
                     .ThenByDescending(x => x.VoteCount);
@@ -42,7 +43,8 @@
             {
                 var posts = unitOfWork.CreateEntityRepository<Post>()
                     .Query()
-                    .Where(x => tag.Contains(x.Topic));
+                    .Where(x => tag.Contains(x.Topic))
+                    .OrderByDescending(x => x.Created);
                 var filtered = this.Filter(posts, page, pageSize)
                     .OrderByDescending(x => x.VoteCount)
                     .ThenByDescending(x => x.Created);
@@ -54,10 +56,22 @@
         {
             using (var unitOfWork = this.unitOfWorkFactory.CreateUnitOfWork())
             {
-                var posts = unitOfWork.CreateEntityRepository<Post>().Query();
-                var filtered = this.Filter(posts, page, pageSize)
-                    .OrderByDescending(x => x.VoteCount)
-                    .ThenByDescending(x => x.Created);
+                var fetchedPosts =
+                    (from post in unitOfWork.CreateEntityRepository<Post>().Query()
+                     select new
+                     {
+                         Post = post,
+                         AggregatedPostCount = ((unitOfWork.CreateEntityRepository<Vote>()
+                                                    .Query()
+                                                    .Where(x => x.PostId == post.Id)
+                                                    .Select(y => y.State == VoteState.Down ? -1 : 1)))
+                                                 .Sum()
+                     })
+                    .Select(x => new { x.Post, x.AggregatedPostCount })
+                    .ToList()
+                    .OrderByDescending(x => x.AggregatedPostCount)
+                    .AsQueryable();
+                var filtered = this.Filter(fetchedPosts.Select(x => x.Post), page, pageSize);
                 return filtered;
             }
         }
