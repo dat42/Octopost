@@ -30,7 +30,7 @@
             validator.RuleFor(textSelector)
                 .MaximumLength(140)
                 .WithErrorCode(ErrorCode.Parse(
-                    ErrorCodeType.TooShort,
+                    ErrorCodeType.OutOfRange,
                     OctopostEntityName.Post,
                     PropertyName.Post.Text).Code)
                 .WithMessage("Text too long");

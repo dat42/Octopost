@@ -4,3 +4,38 @@
     margin-top: 10px;
     margin-bottom: 10px;
 }
+
+.title--container {
+    width: 100%;
+    display: flex;
+}
+
+.left {
+    width: 50%;
+    margin-right: auto;
+    text-align: left;
+}
+
+.right {
+    width: 50%;
+    margin-left: auto;
+    text-align: right;
+    margin-right: 15px;
+}
+
+.full--width {
+    width: 100% !important;
+}
+
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
+}
+
+.post--text {
+    overflow-wrap: break-word;
+    word-break: break-all;
+}

@@ -8,6 +8,10 @@ export class PrefixNumberPipe implements PipeTransform {
         }
 
         const num = <number>value;
+        if (num === 0) {
+            return num.toString();
+        }
+
         return num < 0 ? num.toString() : '+' + num.toString();
     }
 }

@@ -53,6 +53,7 @@ export class OctopostHttpService {
                 return result;
             }
         } catch (error) {
+            // TODO: print error message
             this.snackbarService.showMessage(`We couldn\'t reach our servers. You have the following options:\n1.
                                               Blame your internet.\n2. Blame the server admin.`, 7000);
         }

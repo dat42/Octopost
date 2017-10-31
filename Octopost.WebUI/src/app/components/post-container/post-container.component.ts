@@ -66,7 +66,7 @@ export class PostContainerComponent implements OnInit {
 
   @HostListener('window:scroll', [])
   public async onScroll(): Promise<void> {
-    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && !this.endOfListLoading) {
       this.endOfListLoading = true;
       await this.fetch();
       this.endOfListLoading = false;
