@@ -34,7 +34,7 @@ def estimator_spec_for_softmax_classification(logits, labels, mode):
     one_hot_labels = tf.one_hot(labels, MAX_LABEL, 1, 0)
     loss = tf.losses.softmax_cross_entropy(onehot_labels=one_hot_labels, logits=logits)
     if mode == tf.estimator.ModeKeys.TRAIN:
-        optimizer = tf.train.AdamOptimizer(learning_rate=0.07)
+        optimizer = tf.train.AdamOptimizer(learning_rate=0.075)
         train_op = optimizer.minimize(loss, global_step=tf.train.get_global_step())
         return tf.estimator.EstimatorSpec(mode, loss=loss, train_op=train_op)
 
@@ -61,6 +61,8 @@ def rnn_model(features, labels, mode):
 
 def main(args):
     global n_words
+    if (FLAGS.test_with_fake_data):
+        print('Testing with fake data...')
     dbpedia = tf.contrib.learn.datasets.load_dataset('dbpedia', test_with_fake_data=FLAGS.test_with_fake_data)
     x_train = pandas.Series(dbpedia.train.data[:, 1])
     y_train = pandas.Series(dbpedia.train.target)
@@ -96,7 +98,7 @@ def main(args):
             num_epochs=None,
             shuffle=True)
 
-        classifier.train(input_fn=train_input_fn, steps=10000, hooks=[summary_hook])
+        classifier.train(input_fn=train_input_fn, steps=2000, hooks=[summary_hook])
 
     # Predict.
     test_input_fn = tf.estimator.inputs.numpy_input_fn(

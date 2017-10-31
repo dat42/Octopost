@@ -18,6 +18,7 @@ import {
 
 import * as comp from './components';
 import * as serv from './services';
+import * as pipe from './pipes';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,9 @@ import * as serv from './services';
     comp.NewestPostsComponent,
     comp.TaggedPostsComponent,
     comp.PostContainerComponent,
-    comp.PostComponent
+    comp.PostComponent,
+    pipe.PrefixNumberPipe,
+    pipe.PostTagNamePipe
   ],
   imports: [
     BrowserModule,

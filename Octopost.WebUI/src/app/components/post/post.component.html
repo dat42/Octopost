@@ -2,7 +2,7 @@
   <md-card>
     <md-card-title-group>
       <md-card-title>
-        {{post.topic}}
+        {{post.topic | postTagName}}
       </md-card-title>
       <md-card-subtitle>
         {{post.created | date}}
@@ -10,7 +10,8 @@
     </md-card-title-group>
     <md-card-content>
       {{post.text}}
-      <md-card-actions>
+      <md-card-actions >
+          {{ post.voteCount | prefixNumber }}
           <button md-button [disabled]="voted" (click)="downvote()"><i class="material-icons">thumb_down</i></button>
           <button md-button [disabled]="voted" (click)="upvote()"><i class="material-icons">thumb_up</i></button>
       </md-card-actions>

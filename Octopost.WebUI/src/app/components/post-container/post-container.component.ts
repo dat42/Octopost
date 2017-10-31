@@ -9,14 +9,23 @@ import { VoteService, FilterPostService } from '../../services';
 })
 export class PostContainerComponent implements OnInit {
   private page = 0;
-  private pageSize = 10;
+  private readonly pageSize = 10;
   private endOfList = false;
   private fetchFn: (filterPostService: FilterPostService, page: number, pageSize: number) => Promise<Post[]>;
   private posts: Post[] = new Array<Post>();
+  private endOfListLoading = false;
 
   constructor(private injector: Injector) { }
 
   public async ngOnInit() {
+    this.page = 0;
+    await this.fetch();
+  }
+
+  public async refresh(): Promise<void>  {
+    this.page = 0;
+    this.endOfList = false;
+    this.posts = new Array<Post>();
     await this.fetch();
   }
 
@@ -39,14 +48,15 @@ export class PostContainerComponent implements OnInit {
     }
 
     const postFilterService = this.injector.get(FilterPostService);
-    const fetchedPosts = await this.fetchFunction(postFilterService, this.page, this.pageSize);
+    const fetchedPosts = await this.fetchFunction(postFilterService, this.page++, this.pageSize);
     if (fetchedPosts.length === 0) {
       this.endOfList = true;
       return;
     }
-    this.page++;
     for (const fetchedPost of fetchedPosts) {
-      this.posts.push(fetchedPost);
+      if (this.posts.filter(x => x.id === fetchedPost.id).length === 0) {
+        this.posts.push(fetchedPost);
+      }
     }
   }
 
@@ -57,7 +67,9 @@ export class PostContainerComponent implements OnInit {
   @HostListener('window:scroll', [])
   public async onScroll(): Promise<void> {
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+      this.endOfListLoading = true;
       await this.fetch();
+      this.endOfListLoading = false;
     }
   }
 }
