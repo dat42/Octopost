@@ -4,6 +4,7 @@ import 'rxjs/add/operator/toPromise';
 import 'rxjs/add/operator/map';
 import { SnackbarService } from './snackbar.service';
 import * as moment from 'moment';
+import { BadRequest } from '../model/bad-request.model';
 
 @Injectable()
 export class OctopostHttpService {
@@ -53,9 +54,21 @@ export class OctopostHttpService {
                 return result;
             }
         } catch (error) {
-            // TODO: print error message
-            this.snackbarService.showMessage(`We couldn\'t reach our servers. You have the following options:\n1.
-                                              Blame your internet.\n2. Blame the server admin.`, 7000);
+            switch (error.status) {
+                case 500:
+                    this.snackbarService.showMessage(error.message, 7000);
+                    break;
+                case 400:
+                    const response = <BadRequest>JSON.parse(error.error);
+                    this.snackbarService.showMessage(response.message);
+                    break;
+                case 401:
+                    this.snackbarService.showMessage('You\'re not authorized to access this resource');
+                    break;
+                case 403:
+                    this.snackbarService.showMessage('Forbidden');
+                    break;
+            }
         }
     }
 

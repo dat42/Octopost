@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, HostListener, Injector } from '@angular/core';
 import { Post } from '../../model';
 import { VoteService, FilterPostService } from '../../services';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-post-container',
@@ -14,6 +15,7 @@ export class PostContainerComponent implements OnInit {
   private fetchFn: (filterPostService: FilterPostService, page: number, pageSize: number) => Promise<Post[]>;
   private posts: Post[] = new Array<Post>();
   private endOfListLoading = false;
+  private lastFilter: Date;
 
   constructor(private injector: Injector) { }
 
@@ -66,10 +68,16 @@ export class PostContainerComponent implements OnInit {
 
   @HostListener('window:scroll', [])
   public async onScroll(): Promise<void> {
+    const last = moment(this.lastFilter);
+    const now = moment(new Date());
+    const difference = moment.duration(3, 'seconds').asMilliseconds();
     if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight && !this.endOfListLoading) {
       this.endOfListLoading = true;
       await this.fetch();
       this.endOfListLoading = false;
+      this.lastFilter = new Date();
+    } else if (now.diff(last) > difference) {
+      this.endOfList = true;
     }
   }
 }
