@@ -57,5 +57,12 @@
 
             public static readonly PropertyName PageNumber = new PropertyName("PAGE");
         }
+
+        public static class Tag
+        {
+            public static readonly PropertyName Id = new PropertyName("TAG_ID");
+
+            public static readonly PropertyName TagName = new PropertyName("TAG");
+        }
     }
 }

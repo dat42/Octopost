@@ -4,8 +4,9 @@ import { CreatedResult } from '../model/created-result.model';
 
 @Injectable()
 export class VoteService {
-  private readonly downVote = 1;
-  private readonly upVote = 2;
+  private readonly downVote = -1;
+  private readonly neutral = 0;
+  private readonly upVote = 1;
 
   constructor(private httpService: OctopostHttpService) { }
 

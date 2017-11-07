@@ -19,7 +19,7 @@
             {
                 var voteRepository = unitOfWork.CreateEntityRepository<Vote>();
                 var votes = voteRepository.Query().Where(x => x.PostId == postId).ToArray();
-                var voteCount = votes.Aggregate(0, (current, vote) => vote.State == VoteState.Down ? current - 1 : current + 1);
+                var voteCount = votes.Aggregate(0, (current, vote) => (int)vote.State);
                 return voteCount;
             }
         }
