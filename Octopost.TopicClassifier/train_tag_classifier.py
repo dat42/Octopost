@@ -4,6 +4,7 @@ import configuration_reader
 # Import libraries
 import pandas
 import keras
+from pprint import pprint
 
 # Import TensorFlow
 import tensorflow as tf
@@ -15,7 +16,7 @@ from keras.layers import Dense
 from keras.layers import Embedding
 from keras.layers import Activation
 from keras.layers import Dropout
-from keras.layers import LSTM
+from keras.layers import GRU
 
 # Read configuration
 configuration = configuration_reader.read_configuration()
@@ -29,7 +30,6 @@ EMBEDDING_SIZE = training_configuration['embedding_size']
 LSTM_UNITS = training_configuration['lstm_units']
 RECURRENT_DROPOUT = training_configuration['recurrent_dropout']
 DROPOUT = training_configuration['dropout']
-MAX_LABEL = training_configuration['max_label']
 BATCH_SIZE = training_configuration['batchSize']
 EPOCHS = training_configuration['epochs']
 WORDS_FEATURE = training_configuration['wordsFeature']
@@ -40,7 +40,7 @@ LEARNING_RATE = training_configuration['learning_rate']
 def get_data():
     tf.logging.set_verbosity(tf.logging.INFO)
 
-    dbpedia = tf.contrib.learn.datasets.load_dataset('dbpedia')
+    dbpedia = tf.contrib.learn.datasets.load_dataset('dbpedia', size='huuuuge', test_with_fake_data=False)
     x_train = pandas.Series(dbpedia.train.data[:, 1])
     y_train = pandas.Series(dbpedia.train.target)
     x_test = pandas.Series(dbpedia.test.data[:, 1])
@@ -72,20 +72,20 @@ if __name__ == '__main__':
 
     model = Sequential()
     model.add(Embedding(MAX_SIZE, EMBEDDING_SIZE))
-    model.add(LSTM(LSTM_UNITS, recurrent_dropout=RECURRENT_DROPOUT))
+    model.add(GRU(LSTM_UNITS, recurrent_dropout=RECURRENT_DROPOUT))
     model.add(Dropout(DROPOUT))
     model.add(Dense(num_classes))
     model.add(Activation(ACTIVATION_FUNCTION))
 
     model.compile(loss=LOSS_FUNCTION,
-                optimizer=keras.optimizers.Adam(LEARNING_RATE),
-                metrics=['accuracy'])
+                  optimizer=keras.optimizers.Adam(LEARNING_RATE),
+                  metrics=['accuracy'])
 
     print(model.summary())
 
     tensorboard_callback = keras.callbacks.TensorBoard(log_dir=TENSORBOARD_DIR,
-                                                    histogram_freq=1,
-                                                    write_graph=True)
+                                                       histogram_freq=1,
+                                                       write_graph=True)
 
     history = model.fit(X_train, y_train,
                         batch_size=BATCH_SIZE,
@@ -95,19 +95,22 @@ if __name__ == '__main__':
                         callbacks=[tensorboard_callback])
 
     score = model.evaluate(X_test, y_test,
-                        batch_size=BATCH_SIZE, verbose=1)
+                           batch_size=BATCH_SIZE, verbose=1)
 
     model.save(MODEL_FILE_NAME)
 
     print(u'Loss: {}'.format(score[0]))
     print(u'Accuracy: {}'.format(score[1]))
 
-    while True:
-        text = input('Enter: ')
+    def _predict(text):
         text_to_predict = pandas.Series([text])
         tokenizer.fit_on_texts(text_to_predict)
         text_to_predict_sequences = tokenizer.texts_to_sequences(text_to_predict)
         to_predict = tokenizer.sequences_to_matrix(text_to_predict_sequences, mode='binary')
-        prediction = model.predict(to_predict, steps=1000)
+        prediction = model.predict(to_predict)
         predicted_class_index = prediction.argmax(axis=1)
-        print(predicted_class_index)
+        pprint(predicted_class_index)
+
+    while True:
+        text_input = input('Enter: ')
+        _predict(text_input)

@@ -7,7 +7,7 @@
     },
     "train": {
         "wordsFeature": "words",
-        "epochs": 3,
+        "epochs": 10,
         "batchSize": 32,
         "dropout": 0.5,
         "recurrent_dropout": 0.5,
