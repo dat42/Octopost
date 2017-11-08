@@ -1,10 +1,10 @@
-<md-form-field class="full--width">
-  <textarea mdInput placeholder="Post text" [(ngModel)]="postText"></textarea>
-</md-form-field>
+<mat-form-field class="full--width">
+  <textarea matInput placeholder="Post text" [(ngModel)]="postText"></textarea>
+</mat-form-field>
 <div class="octopost--create--buttons--container">
   <div class="loading--container">
       <mat-progress-spinner class="loading" *ngIf="isLoading" mode="indeterminate"></mat-progress-spinner>
   </div>
-  <button class="octopost--create--buttons" [disabled]="isLoading" md-button (click)="closeDialog()">Cancel</button>
-  <button class="octopost--create--buttons" [disabled]="isLoading" md-button (click)="createPost()">Create</button>
+  <button class="octopost--create--buttons" [disabled]="isLoading" mat-button (click)="closeDialog()">Cancel</button>
+  <button class="octopost--create--buttons" [disabled]="isLoading" mat-button (click)="createPost()">Create</button>
 </div>

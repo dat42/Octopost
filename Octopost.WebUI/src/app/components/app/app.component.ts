@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { MdDialog } from '@angular/material';
+import { MatDialog } from '@angular/material';
 import { CreatePostComponent } from '../create-post';
 
 @Component({
@@ -8,7 +8,7 @@ import { CreatePostComponent } from '../create-post';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(private dialog: MdDialog) {
+  constructor(private dialog: MatDialog) {
   }
 
   public showDialog(): void {

@@ -5,12 +5,12 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { GlobalErrorHandler } from './global-error-handler';
 import {
-  MdButtonModule,
+  MatButtonModule,
   MatToolbarModule,
   MatTabsModule,
   MatCardModule,
-  MdInputModule,
-  MdDialogModule,
+  MatInputModule,
+  MatDialogModule,
   MatSnackBarModule,
   MatProgressSpinnerModule,
   MatChipsModule
@@ -36,13 +36,13 @@ import * as pipe from './pipes';
     BrowserModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MdButtonModule,
+    MatButtonModule,
     MatToolbarModule,
     MatTabsModule,
     MatCardModule,
-    MdInputModule,
+    MatInputModule,
     FormsModule,
-    MdDialogModule,
+    MatDialogModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
     MatChipsModule
