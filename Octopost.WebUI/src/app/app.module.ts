@@ -9,11 +9,11 @@ import {
   MatToolbarModule,
   MatTabsModule,
   MatCardModule,
+  MatInputModule,
   MatDialogModule,
   MatSnackBarModule,
   MatProgressSpinnerModule,
-  MatChipsModule,
-  MatInputModule
+  MatChipsModule
 } from '@angular/material';
 
 import * as comp from './components';

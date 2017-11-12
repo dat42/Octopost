@@ -60,7 +60,14 @@
                     ErrorCodeType.PropertyInvalidData,
                     OctopostEntityName.Vote,
                     PropertyName.Vote.VoteState).Code)
-                .WithMessage("Vote state must be set");
+                .WithMessage("Vote state must be set to a valid value");
+            validator.RuleFor(property)
+                .Must(x => Enum.TryParse(typeof(VoteState), x, out var state) && (VoteState)state != VoteState.Neutral)
+                .WithErrorCode(ErrorCode.Parse(
+                    ErrorCodeType.OutOfRange,
+                    OctopostEntityName.Vote,
+                    PropertyName.Vote.VoteState).Code)
+                .WithMessage("Vote state cannot be neutral");
         }
 
         public static void AddRuleForPaging<T>(
