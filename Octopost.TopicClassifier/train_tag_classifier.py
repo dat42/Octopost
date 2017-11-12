@@ -4,6 +4,9 @@ import configuration_reader
 # Import libraries
 import pandas
 import keras
+import csv
+import random
+import numpy as np
 from pprint import pprint
 
 # Import TensorFlow
@@ -36,15 +39,55 @@ WORDS_FEATURE = training_configuration['wordsFeature']
 MODEL_FILE_NAME = configuration['modelFileName']
 LEARNING_RATE = training_configuration['learning_rate']
 
+test_csv = './dbpedia_data/dbpedia_csv/test.csv'
+train_csv = './dbpedia_data/dbpedia_csv/train.csv'
+
+def load_data_from_csv(file):
+    inputs = []
+    targets = []
+    with open(file, 'r', encoding='utf8') as csvfile:
+        file_reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        i = 0
+        for row in file_reader:
+            inputs.append(row[2])
+            targets.append(row[0])
+            i += 1
+            if i % 1000 == 0:
+                print('Reading csv... ' + str(i))
+    inputs = np.array(inputs)
+    targets = np.array(targets)
+    return (inputs, targets)
+
+
+def randomly_shrink_to(x_list, y_list, new_size):
+    new_x_list = []
+    new_y_list = []
+    length = len(x_list) - 1
+    done_indicies = []
+    while len(new_x_list) <= new_size:
+        index = random.randint(0, length)
+        if index not in done_indicies:
+            done_indicies.append(index)
+            new_x_list.append(x_list[index])
+            new_y_list.append(y_list[index])
+    return (new_x_list, new_y_list)
+
 
 def get_data():
     tf.logging.set_verbosity(tf.logging.INFO)
 
-    dbpedia = tf.contrib.learn.datasets.load_dataset('dbpedia', size='huuuuge', test_with_fake_data=False)
-    x_train = pandas.Series(dbpedia.train.data[:, 1])
-    y_train = pandas.Series(dbpedia.train.target)
-    x_test = pandas.Series(dbpedia.test.data[:, 1])
-    y_test = pandas.Series(dbpedia.test.target)
+    dbpedia = tf.contrib.learn.datasets.load_dataset('dbpedia', size='small', test_with_fake_data=False)
+
+    (training_data_x, training_data_y) = load_data_from_csv(train_csv)
+    (testing_data_x, testing_data_y) = load_data_from_csv(test_csv)
+
+    (training_data_x, training_data_y) = randomly_shrink_to(training_data_x, training_data_y, len(training_data_x) * 0.15)
+    (testing_data_x, testing_data_y) = randomly_shrink_to(testing_data_x, testing_data_y, len(testing_data_x) * 0.15)
+
+    x_train = pandas.Series(training_data_x)
+    y_train = pandas.Series(training_data_y)
+    x_test = pandas.Series(testing_data_x)
+    y_test = pandas.Series(testing_data_y)
 
     tokenizer = Tokenizer()
     tokenizer.fit_on_texts(x_train)

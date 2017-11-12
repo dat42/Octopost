@@ -1,5 +1,5 @@
 import { Component, OnInit, Inject, EventEmitter, Output } from '@angular/core';
-import { MdDialogRef, MD_DIALOG_DATA } from '@angular/material';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { CreatePost } from '../../model';
 import { CreatePostService, SnackbarService } from '../../services';
 
@@ -16,7 +16,7 @@ export class CreatePostComponent implements OnInit {
   @Output() private postCreated = new EventEmitter<number>();
 
   constructor(
-    public dialogRef: MdDialogRef<CreatePostComponent>,
+    public dialogRef: MatDialogRef<CreatePostComponent>,
     private createPostService: CreatePostService,
     private snackbarService: SnackbarService) {
   }

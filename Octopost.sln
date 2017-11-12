@@ -11,7 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Octopost.DataAccess", "Octo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Octopost.Services", "Octopost.Services\Octopost.Services.csproj", "{2ECC211B-3E62-4C57-B7DE-CB48A0AD25C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Octopost.Validation", "Octopost.Validation\Octopost.Validation.csproj", "{3F048BC5-2381-4DAB-B82E-4DFE7A309312}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Octopost.Validation", "Octopost.Validation\Octopost.Validation.csproj", "{3F048BC5-2381-4DAB-B82E-4DFE7A309312}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Octopost.Tests", "Octopost.Tests\Octopost.Tests.csproj", "{7D1BCCDC-5AD4-4211-AEF4-FCAFE978C8EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{3F048BC5-2381-4DAB-B82E-4DFE7A309312}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3F048BC5-2381-4DAB-B82E-4DFE7A309312}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3F048BC5-2381-4DAB-B82E-4DFE7A309312}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D1BCCDC-5AD4-4211-AEF4-FCAFE978C8EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D1BCCDC-5AD4-4211-AEF4-FCAFE978C8EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D1BCCDC-5AD4-4211-AEF4-FCAFE978C8EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D1BCCDC-5AD4-4211-AEF4-FCAFE978C8EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

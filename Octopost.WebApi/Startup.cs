@@ -22,12 +22,10 @@
     using Octopost.Services.UoW;
     using Octopost.Services.Validation;
     using Octopost.Services.Votes;
-    using Octopost.Validation.Common;
     using Octopost.Validation.Dto.Newsletter;
     using Octopost.WebApi.Infrastructure;
     using Octopost.WebApi.Infrastructure.Filters;
     using Octopost.WebApi.Infrastructure.Middleware;
-    using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Reflection;
@@ -43,13 +41,11 @@
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // This instance needs to be created for the compiler to reference the Octopost.Validation assembly
-            var instance = new PostDtoValidator();
-
             services.AddOptions();
             services.Configure<OctopostSettings>(this.Configuration.GetSection("OctopostSettings"));
             services.AddSingleton<IConfiguration>(this.Configuration);
             services.AddSingleton<OctopostSettings>(x => x.GetService<IOptions<OctopostSettings>>().Value);
+            var settings = services.BuildServiceProvider().GetService<OctopostSettings>();
             this.ConfigureAutomapper();
             var mvc = services.AddMvc(config =>
             {
@@ -67,7 +63,7 @@
             mvc.AddMvcOptions(o => o.Filters.Add(typeof(GlobalExceptionFilter)));
             services.AddSwaggerGen();
             services.AddEntityFrameworkSqlServer();
-            var connectionString = this.Configuration.GetConnectionString("DefaultConnection");
+            var connectionString =  this.Configuration.GetConnectionString("DefaultConnection");
             services.AddDbContext<OctopostDbContext>(options =>
             {
                 options.UseSqlServer(connectionString);
@@ -106,6 +102,9 @@
 
             var context = services.BuildServiceProvider().GetService<OctopostDbContext>();
             context.Database.EnsureCreated();
+
+            // This instance needs to be created for the compiler to reference the Octopost.Validation assembly
+            var instance = new PostDtoValidator();
         }
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)

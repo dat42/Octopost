@@ -6,8 +6,10 @@
     {
         private static Func<IServiceProvider> serviceProvider;
 
-        public static void SetServiceLocator(Func<IServiceProvider> serviceLocator) =>
+        public static void SetServiceLocator(Func<IServiceProvider> serviceLocator)
+        {
             ServiceLocator.serviceProvider = serviceLocator;
+        }
 
         public static IServiceProvider Instance => ServiceLocator.serviceProvider?.Invoke();
     }

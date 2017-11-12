@@ -4,6 +4,7 @@
     using Octopost.Model.Data;
     using Octopost.Model.Interfaces;
     using Octopost.Model.Validation;
+    using Octopost.Services;
     using System;
     using System.Linq.Expressions;
 
@@ -41,12 +42,12 @@
             Expression<Func<T, string>> topicSelector)
         {
             validator.RuleFor(topicSelector)
-                .Must(x => !string.IsNullOrEmpty(x))
-                .WithErrorCode(ErrorCode.Parse(
-                    ErrorCodeType.PropertyDataNullOrEmpty,
-                    OctopostEntityName.Post,
-                    PropertyName.Post.Topic).Code)
-                .WithMessage("Must be tagged");
+            .Must(x => !string.IsNullOrEmpty(x))
+            .WithErrorCode(ErrorCode.Parse(
+                ErrorCodeType.PropertyDataNullOrEmpty,
+                OctopostEntityName.Post,
+                PropertyName.Post.Topic).Code)
+            .WithMessage("Must be tagged");
         }
 
         public static void AddRuleForVoteStateString<T>(

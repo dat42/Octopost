@@ -21,21 +21,21 @@
 
         public override object GetJsonObject()
         {
-            //if (Debugger.IsAttached)
-            //{
+            if (Debugger.IsAttached)
+            {
                 return new
                 {
                     Success = false,
                     Message = this.Message,
                     Exception = this.Exception
                 };
-            //}
+            }
 
-            //return new
-            //{
-            //    Success = false,
-            //    Message = this.Message
-            //};
+            return new
+            {
+                Success = false,
+                Message = this.Message
+            };
         }
     }
 }

@@ -3,6 +3,7 @@
     using Octopost.Model.Data;
     using Octopost.Model.Dto;
     using Octopost.Model.Extensions;
+    using Octopost.Model.Settings;
     using Octopost.Services.Tagging;
     using Octopost.Services.UoW;
     using System;
@@ -13,12 +14,16 @@
 
         private readonly IPostTaggingService postTaggingService;
 
+        private readonly OctopostSettings settings;
+
         public PostCreationService(
             IUnitOfWorkFactory unitOfWorkFactory,
-            IPostTaggingService postTaggingService)
+            IPostTaggingService postTaggingService,
+            OctopostSettings settings)
         {
             this.unitOfWorkFactory = unitOfWorkFactory;
             this.postTaggingService = postTaggingService;
+            this.settings = settings;
         }
 
         public long CreatePost(CreatePostDto createPostDto)

@@ -5,6 +5,6 @@
   <div class="loading--container">
       <mat-progress-spinner class="loading" *ngIf="isLoading" mode="indeterminate"></mat-progress-spinner>
   </div>
-  <button class="octopost--create--buttons" [disabled]="isLoading" md-button (click)="closeDialog()">Cancel</button>
-  <button class="octopost--create--buttons" [disabled]="isLoading" md-button (click)="createPost()">Create</button>
+  <button class="octopost--create--buttons" [disabled]="isLoading" mat-button (click)="closeDialog()">Cancel</button>
+  <button class="octopost--create--buttons" [disabled]="isLoading" mat-button (click)="createPost()">Create</button>
 </div>

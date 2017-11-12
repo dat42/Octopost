@@ -48,7 +48,7 @@
             var notFound = new List<string>();
             foreach (var tag in tags)
             {
-                if (classes.Values.Contains(tag))
+                if (!classes.Values.Contains(tag))
                 {
                     notFound.Add(tag);
                 }
@@ -59,7 +59,7 @@
                 var attemptedValues = string.Join(", ", tags);
                 var notFoundValues = string.Join(", ", notFound);
                 throw new ApiException(x => x.BadRequestResult(
-                    (ErrorCode.Parse(ErrorCodeType.InvalidReferenceId, OctopostEntityName.Tag, PropertyName.Tag.TagName),
+                    (ErrorCode.Parse(ErrorCodeType.InvalidReferenceId, OctopostEntityName.Tag, PropertyName.Tag.TagName, OctopostEntityName.Tag),
                     new ErrorDefinition(attemptedValues, $"The following tags do not exist: {notFoundValues}", PropertyName.Tag.TagName))));
             }
 
