@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { Post } from '../../model';
 import { FilterPostService } from '../../services';
+import { PostContainerComponent } from '../post-container';
 
 @Component({
   selector: 'app-popular-posts',
@@ -8,10 +9,13 @@ import { FilterPostService } from '../../services';
   styleUrls: ['./popular-posts.component.css']
 })
 export class PopularPostsComponent {
-
-  constructor() { }
+  @ViewChild(PostContainerComponent) public postContainer: PostContainerComponent;
 
   public fetch(filterPostService: FilterPostService, page: number, pageSize: number): Promise<Post[]> {
     return filterPostService.votes(page, pageSize);
+  }
+
+  public async refresh(): Promise<void> {
+    await this.postContainer.refresh();
   }
 }

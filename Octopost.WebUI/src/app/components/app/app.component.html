@@ -6,17 +6,17 @@
         <button mat-button (click)="showDialog()"><i class="material-icons">add</i></button>
         <button mat-button (click)="refresh()"><i class="material-icons">refresh</i></button>
     </div>
-    <mat-tab-group>
+    <mat-tab-group #tabGroup>
         <mat-tab label="Popular">
-            <app-popular-posts>
+            <app-popular-posts #popular>
             </app-popular-posts>
         </mat-tab>
         <mat-tab label="Newest">
-            <app-newest-posts>
+            <app-newest-posts #newest>
             </app-newest-posts>
         </mat-tab>
         <mat-tab label="By Tag">
-            <app-tagged-posts>
+            <app-tagged-posts #byTag>
             </app-tagged-posts>
         </mat-tab>
     </mat-tab-group>

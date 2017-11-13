@@ -20,7 +20,6 @@ export class GlobalErrorHandler implements ErrorHandler {
         const responseObj = <BadRequest>JSON.parse(responseText);
         this.snackBarService.showMessage(responseObj.message);
       } catch (ex) {
-        this.snackBarService.showMessage('An error occured while displaying the previous error');
       }
     } else {
       this.snackBarService.showMessage('Catastrophic failure!!!');

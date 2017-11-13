@@ -24,4 +24,5 @@
 
 .post--container--component {
     background-color: #CFD8DC;
+    overflow: hidden;
 }

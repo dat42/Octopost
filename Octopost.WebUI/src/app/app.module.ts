@@ -13,7 +13,9 @@ import {
   MatDialogModule,
   MatSnackBarModule,
   MatProgressSpinnerModule,
-  MatChipsModule
+  MatChipsModule,
+  MatProgressBarModule,
+  MatSelectModule
 } from '@angular/material';
 
 import * as comp from './components';
@@ -45,7 +47,9 @@ import * as pipe from './pipes';
     MatDialogModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    MatChipsModule
+    MatChipsModule,
+    MatProgressBarModule,
+    MatSelectModule
   ],
   providers: [
     serv.CreatePostService,

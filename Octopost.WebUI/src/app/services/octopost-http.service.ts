@@ -59,7 +59,7 @@ export class OctopostHttpService {
                     this.snackbarService.showMessage(error.message, 7000);
                     break;
                 case 400:
-                    const response = <BadRequest>JSON.parse(error.error);
+                    const response = <BadRequest>error.error;
                     this.snackbarService.showMessage(response.message);
                     break;
                 case 401:

@@ -1,2 +1,8 @@
-<app-post-container>
+<mat-form-field class="tag--selector">
+    <mat-select placeholder="Tags" multiple>
+        <mat-option *ngFor="let val of values" [value]="val">{{labels[val]}}</mat-option>
+    </mat-select>
+</mat-form-field>
+<br />
+<app-post-container [fetchFn]="fetch" #postContainer>
 </app-post-container>

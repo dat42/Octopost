@@ -12,6 +12,10 @@ export class SnackbarService {
   }
 
   public showMessage(message: string, duration: number = 2000): void {
+    if (SnackbarService.snackBar === undefined) {
+      return;
+    }
+
     SnackbarService.snackBar.open(message, 'Dismiss', {
       duration: duration
     });
