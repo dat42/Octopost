@@ -9,7 +9,16 @@ import { PostContainerComponent } from '../post-container';
   styleUrls: ['./popular-posts.component.css']
 })
 export class PopularPostsComponent {
-  @ViewChild(PostContainerComponent) public postContainer: PostContainerComponent;
+  private _isActive = false;
+  @ViewChild('postContainer') public postContainer: PostContainerComponent;
+
+  public set isActive(value: boolean) {
+    this._isActive = value;
+  }
+
+  public get isActive(): boolean {
+    return this._isActive;
+  }
 
   public fetch(filterPostService: FilterPostService, page: number, pageSize: number): Promise<Post[]> {
     return filterPostService.votes(page, pageSize);

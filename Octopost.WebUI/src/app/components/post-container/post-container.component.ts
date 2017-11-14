@@ -16,8 +16,13 @@ export class PostContainerComponent implements OnInit {
   private posts: Post[] = new Array<Post>();
   private endOfListLoading = false;
   private lastFilter: Date;
+  private _isActive = false;
 
   constructor(private injector: Injector) { }
+
+  @Input() public set isActive(value: boolean) {
+    this._isActive = value;
+  }
 
   public async ngOnInit() {
     this.page = 0;
@@ -27,6 +32,7 @@ export class PostContainerComponent implements OnInit {
   public async refresh(): Promise<void>  {
     this.page = 0;
     this.endOfList = false;
+    this.endOfListLoading = false;
     this.posts = new Array<Post>();
     await this.fetch();
   }
@@ -38,6 +44,9 @@ export class PostContainerComponent implements OnInit {
   @Input('fetchFn')
   public set fetchFunction(value: (filterPostService: FilterPostService, page: number, pageSize: number) => Promise<Post[]>) {
     this.fetchFn = value;
+    this.endOfList = false;
+    this.page = 0;
+    this.fetch();
   }
 
   public get fetchFunction(): (filterPostService: FilterPostService, page: number, pageSize: number) => Promise<Post[]> {
@@ -68,6 +77,10 @@ export class PostContainerComponent implements OnInit {
 
   @HostListener('window:scroll', [])
   public async onScroll(): Promise<void> {
+    if (!this._isActive) {
+      return;
+    }
+
     const last = moment(this.lastFilter);
     const now = moment(new Date());
     const difference = moment.duration(3, 'seconds').asMilliseconds();
@@ -77,7 +90,7 @@ export class PostContainerComponent implements OnInit {
       this.endOfListLoading = false;
       this.lastFilter = new Date();
     } else if (now.diff(last) > difference) {
-      this.endOfList = true;
+      //this.endOfList = true;
     }
   }
 }

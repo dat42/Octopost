@@ -20,6 +20,10 @@ export class TagService {
     'WrittenWork': 'Written Work'
   };
 
+  public getAll(): { [id: string]: string } {
+    return this.map;
+  }
+
   public getDescription(value: string): string {
     return this.map[value];
   }
