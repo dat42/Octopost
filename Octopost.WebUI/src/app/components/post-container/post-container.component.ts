@@ -9,16 +9,16 @@ import * as moment from 'moment';
   styleUrls: ['./post-container.component.css']
 })
 export class PostContainerComponent implements OnInit {
-  private page = 0;
-  private readonly pageSize = 10;
-  private endOfList = false;
-  private fetchFn: (filterPostService: FilterPostService, page: number, pageSize: number) => Promise<Post[]>;
-  private posts: Post[] = new Array<Post>();
-  private endOfListLoading = false;
-  private lastFilter: Date;
-  private _isActive = false;
+  protected page = 0;
+  protected readonly pageSize = 10;
+  protected endOfList = false;
+  protected fetchFn: (filterPostService: FilterPostService, page: number, pageSize: number) => Promise<Post[]>;
+  protected posts: Post[] = new Array<Post>();
+  protected endOfListLoading = false;
+  protected lastFilter: Date;
+  protected _isActive = false;
 
-  constructor(private injector: Injector) { }
+  constructor(protected injector: Injector) { }
 
   @Input() public set isActive(value: boolean) {
     this._isActive = value;
@@ -60,8 +60,10 @@ export class PostContainerComponent implements OnInit {
 
     const postFilterService = this.injector.get(FilterPostService);
     const fetchedPosts = await this.fetchFunction(postFilterService, this.page++, this.pageSize);
-    if (fetchedPosts.length === 0) {
+    if (fetchedPosts.length < this.pageSize) {
       this.endOfList = true;
+    }
+    if (fetchedPosts.length === 0) {
       return;
     }
     for (const fetchedPost of fetchedPosts) {
@@ -89,8 +91,6 @@ export class PostContainerComponent implements OnInit {
       await this.fetch();
       this.endOfListLoading = false;
       this.lastFilter = new Date();
-    } else if (now.diff(last) > difference) {
-      //this.endOfList = true;
     }
   }
 }

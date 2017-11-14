@@ -5,5 +5,12 @@
         </mat-select>
     </mat-form-field>
 </div>
-<app-post-container [isActive]="isActive" [fetchFn]="fetch" #postContainer>
-</app-post-container>
+<div class="post--container--component">
+    <div class="post--container" *ngFor="let post of shownPosts;trackBy: trackByFn">
+        <app-post class="single--post" [post]="post">
+        </app-post>
+    </div>
+    <div div="loading--container" *ngIf="!endOfList">
+        <mat-progress-spinner class="loading" mode="indeterminate"></mat-progress-spinner>
+    </div>
+</div>

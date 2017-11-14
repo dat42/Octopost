@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, Injector } from '@angular/core';
 import { PostContainerComponent } from '../post-container';
 import { FilterPostService } from '../../services/filter-post.service';
 import { Post } from '../../model/post.model';
@@ -10,33 +10,20 @@ import { SnackbarService } from '../../services/snackbar.service';
   templateUrl: './tagged-posts.component.html',
   styleUrls: ['./tagged-posts.component.css']
 })
-export class TaggedPostsComponent {
-  private _isActive = false;
+export class TaggedPostsComponent extends PostContainerComponent {
   private _selectedValue: string[] = [];
-  @ViewChild('postContainer') public postContainer: PostContainerComponent;
 
-  constructor(private tagService: TagService, private snackbarService: SnackbarService) {
-    console.log(this.snackbarService);
+  constructor(injector: Injector, private tagService: TagService, private snackbarService: SnackbarService) {
+    super(injector);
   }
 
   public set selectedValue(value: string[]) {
     this._selectedValue = value;
-    this.fetch = this.fetch;
-    if (this.postContainer) {
-      this.postContainer.fetch();
-    }
+    this.refresh().then(() => this.fetch());
   }
 
   public get selectedValue(): string[] {
     return this._selectedValue;
-  }
-
-  public set isActive(value: boolean) {
-    this._isActive = value;
-  }
-
-  public get isActive(): boolean {
-    return this._isActive;
   }
 
   public get labels(): { [id: string]: string } {
@@ -54,16 +41,31 @@ export class TaggedPostsComponent {
     return list;
   }
 
-  public fetch(filterPostService: FilterPostService, page: number, pageSize: number): Promise<Post[]> {
+  public async fetch(): Promise<void> {
+    if (this.endOfList) {
+      return;
+    }
+
     if (this._selectedValue && this._selectedValue.length > 0) {
-      return filterPostService.tags(page, pageSize, ['Company']);
+      const postFilterService = this.injector.get(FilterPostService);
+      const fetchedPosts = await postFilterService.tags(this.page++, this.pageSize, this._selectedValue);
+      if (fetchedPosts.length === 0) {
+        this.endOfList = true;
+        return;
+      }
+
+      for (const fetchedPost of fetchedPosts) {
+        if (this.posts.filter(x => x.id === fetchedPost.id).length === 0) {
+          this.posts.push(fetchedPost);
+        }
+      }
     } else {
       this.snackbarService.showMessage('Please select some tags first');
-      return Promise.resolve([]);
+      return Promise.resolve();
     }
   }
 
   public async refresh(): Promise<void> {
-    await this.postContainer.refresh();
+    await super.refresh();
   }
 }
