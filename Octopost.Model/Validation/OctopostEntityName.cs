@@ -5,6 +5,7 @@
         Post,
         Vote,
         Filter,
+        Tag,
         Unspecified
     }
 }

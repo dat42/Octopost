@@ -4,6 +4,7 @@
     using Octopost.Model.Data;
     using Octopost.Model.Interfaces;
     using Octopost.Model.Validation;
+    using Octopost.Services;
     using System;
     using System.Linq.Expressions;
 
@@ -30,7 +31,7 @@
             validator.RuleFor(textSelector)
                 .MaximumLength(140)
                 .WithErrorCode(ErrorCode.Parse(
-                    ErrorCodeType.TooShort,
+                    ErrorCodeType.OutOfRange,
                     OctopostEntityName.Post,
                     PropertyName.Post.Text).Code)
                 .WithMessage("Text too long");
@@ -41,12 +42,12 @@
             Expression<Func<T, string>> topicSelector)
         {
             validator.RuleFor(topicSelector)
-                .Must(x => !string.IsNullOrEmpty(x))
-                .WithErrorCode(ErrorCode.Parse(
-                    ErrorCodeType.PropertyDataNullOrEmpty,
-                    OctopostEntityName.Post,
-                    PropertyName.Post.Topic).Code)
-                .WithMessage("Must be tagged");
+            .Must(x => !string.IsNullOrEmpty(x))
+            .WithErrorCode(ErrorCode.Parse(
+                ErrorCodeType.PropertyDataNullOrEmpty,
+                OctopostEntityName.Post,
+                PropertyName.Post.Topic).Code)
+            .WithMessage("Must be tagged");
         }
 
         public static void AddRuleForVoteStateString<T>(
@@ -59,7 +60,14 @@
                     ErrorCodeType.PropertyInvalidData,
                     OctopostEntityName.Vote,
                     PropertyName.Vote.VoteState).Code)
-                .WithMessage("Vote state must be set");
+                .WithMessage("Vote state must be set to a valid value");
+            validator.RuleFor(property)
+                .Must(x => Enum.TryParse(typeof(VoteState), x, out var state) && (VoteState)state != VoteState.Neutral)
+                .WithErrorCode(ErrorCode.Parse(
+                    ErrorCodeType.OutOfRange,
+                    OctopostEntityName.Vote,
+                    PropertyName.Vote.VoteState).Code)
+                .WithMessage("Vote state cannot be neutral");
         }
 
         public static void AddRuleForPaging<T>(

@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Octopost.Model\Octopost.Model.csproj" />
+    <ProjectReference Include="..\Octopost.Services\Octopost.Services.csproj" />
   </ItemGroup>
 
 </Project>

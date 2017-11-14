@@ -2,7 +2,8 @@
 {
     public enum VoteState
     {
-        Up,
-        Down
+        Up = 1,
+        Down = -1,
+        Neutral = 0
     }
 }

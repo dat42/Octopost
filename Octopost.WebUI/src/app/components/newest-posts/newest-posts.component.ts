@@ -1,17 +1,30 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
+import { PostContainerComponent } from '../post-container';
+import { FilterPostService } from '../../services/filter-post.service';
 import { Post } from '../../model';
-import { FilterPostService } from '../../services';
 
 @Component({
   selector: 'app-newest-posts',
   templateUrl: './newest-posts.component.html',
   styleUrls: ['./newest-posts.component.css']
 })
-export class NewestPostsComponent implements OnInit {
+export class NewestPostsComponent {
+  private _isActive = false;
+  @ViewChild('postContainer') public postContainer: PostContainerComponent;
 
-  constructor() { }
-
-  ngOnInit() {
+  public set isActive(value: boolean) {
+    this._isActive = value;
   }
 
+  public get isActive(): boolean {
+    return this._isActive;
+  }
+
+  public fetch(filterPostService: FilterPostService, page: number, pageSize: number): Promise<Post[]> {
+    return filterPostService.newest(page, pageSize);
+  }
+
+  public async refresh(): Promise<void> {
+    await this.postContainer.refresh();
+  }
 }

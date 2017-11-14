@@ -6,15 +6,6 @@
     text-align: right;
 }
 
-.loading--container {
-    position: relative;
-}
-
-.loading {
-    position: absolute;
-    left: 0;
-}
-
 mat-progress-spinner {
     height: 36px;
     display: inline-block;

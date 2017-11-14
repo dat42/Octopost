@@ -4,7 +4,6 @@
     using Octopost.Model.Dto;
     using Octopost.Services.ApiResult;
     using Octopost.Services.Posts;
-    using Octopost.Validation.Dto.Post;
     using System;
     using System.Linq;
 

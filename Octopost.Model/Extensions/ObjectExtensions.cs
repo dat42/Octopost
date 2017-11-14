@@ -4,9 +4,7 @@
 
     public static class ObjectExtensions
     {
-        public static TResult MapTo<TResult>(this object obj)
-        {
-            return Mapper.Map<TResult>(obj);
-        }
+        public static TResult MapTo<TResult>(this object obj) =>
+            Mapper.Map<TResult>(obj);
     }
 }

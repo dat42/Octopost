@@ -1,0 +1,23 @@
+{
+    "logDir": "graph",
+    "port": 9001,
+    "modelFileName": "model.h5",
+    "tensorboard": {
+        "dir": "./graph"
+    },
+    "train": {
+        "wordsFeature": "words",
+        "epochs": 2,
+        "batchSize": 32,
+        "dropout": 0.5,
+        "recurrent_dropout": 0.5,
+        "max_label": 15,
+        "lstm_units": 128,
+        "embedding_size": 200,
+        "activation_function": "sigmoid",
+        "loss": "binary_crossentropy",
+        "max_size": 1000,
+        "max_document_length": 50,
+        "learning_rate": 0.001
+    }
+}

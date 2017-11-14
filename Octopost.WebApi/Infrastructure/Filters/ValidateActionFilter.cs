@@ -12,12 +12,12 @@
     {
         private readonly IServiceProvider provider;
 
-        private readonly IApiResultService result;
+        private readonly IApiResultService apiResultService;
 
-        public ValidateActionFilter(IServiceProvider provider, IApiResultService result)
+        public ValidateActionFilter(IServiceProvider provider, IApiResultService apiResultService)
         {
             this.provider = provider;
-            this.result = result;
+            this.apiResultService = apiResultService;
         }
 
         public void OnActionExecuted(ActionExecutedContext context)
@@ -42,7 +42,7 @@
 
             if (validationList.Any())
             {
-                context.Result = this.result.BadRequest(validationList);
+                context.Result = this.apiResultService.BadRequest(validationList);
             }
         }
     }

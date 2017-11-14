@@ -1,12 +1,15 @@
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
+
 import argparse
 import sys
 from sklearn import metrics
 
 import numpy as np
 import pandas
+import csv
+import random
 import tensorflow as tf
 
 from flask import Flask
@@ -19,6 +22,36 @@ EMBEDDING_SIZE = 50
 n_words = 0
 MAX_LABEL = 15
 WORDS_FEATURE = 'words'
+
+
+test_csv = './dbpedia_data/dbpedia_csv/test.csv'
+train_csv = './dbpedia_data/dbpedia_csv/train.csv'
+
+def load_data_from_csv(file):
+    inputs = []
+    targets = []
+    with open(file, 'r', encoding='utf8') as csvfile:
+        file_reader = csv.reader(csvfile, delimiter=',', quotechar='"')
+        for row in file_reader:
+            inputs.append(row[2])
+            targets.append(int(row[0]))
+    inputs = np.array(inputs)
+    targets = np.array(targets)
+    return (inputs, targets)
+
+
+def randomly_shrink_to(x_list, y_list, new_size):
+    new_x_list = []
+    new_y_list = []
+    length = len(x_list) - 1
+    done_indicies = []
+    while len(new_x_list) <= new_size:
+        index = random.randint(0, length)
+        if index not in done_indicies:
+            done_indicies.append(index)
+            new_x_list.append(x_list[index])
+            new_y_list.append(y_list[index])
+    return (new_x_list, new_y_list)
 
 
 def estimator_spec_for_softmax_classification(logits, labels, mode):
@@ -34,7 +67,7 @@ def estimator_spec_for_softmax_classification(logits, labels, mode):
     one_hot_labels = tf.one_hot(labels, MAX_LABEL, 1, 0)
     loss = tf.losses.softmax_cross_entropy(onehot_labels=one_hot_labels, logits=logits)
     if mode == tf.estimator.ModeKeys.TRAIN:
-        optimizer = tf.train.AdamOptimizer(learning_rate=0.07)
+        optimizer = tf.train.AdamOptimizer(learning_rate=0.1)
         train_op = optimizer.minimize(loss, global_step=tf.train.get_global_step())
         return tf.estimator.EstimatorSpec(mode, loss=loss, train_op=train_op)
 
@@ -61,11 +94,23 @@ def rnn_model(features, labels, mode):
 
 def main(args):
     global n_words
-    dbpedia = tf.contrib.learn.datasets.load_dataset('dbpedia', test_with_fake_data=FLAGS.test_with_fake_data)
+    dbpedia = tf.contrib.learn.datasets.load_dataset('dbpedia', size='small', test_with_fake_data=False)
+
     x_train = pandas.Series(dbpedia.train.data[:, 1])
     y_train = pandas.Series(dbpedia.train.target)
     x_test = pandas.Series(dbpedia.test.data[:, 1])
     y_test = pandas.Series(dbpedia.test.target)
+
+    # (training_data_x, training_data_y) = load_data_from_csv(train_csv)
+    # (testing_data_x, testing_data_y) = load_data_from_csv(test_csv)
+
+    # (training_data_x, training_data_y) = randomly_shrink_to(training_data_x, training_data_y, len(training_data_x) * 0.15)
+    # (testing_data_x, testing_data_y) = randomly_shrink_to(testing_data_x, testing_data_y, len(testing_data_x) * 0.15)
+
+    # x_train = pandas.Series(training_data_x)
+    # y_train = pandas.Series(training_data_y)
+    # x_test = pandas.Series(testing_data_x)
+    # y_test = pandas.Series(testing_data_y)
 
     vocab_processor = tf.contrib.learn.preprocessing.VocabularyProcessor(MAX_DOCUMENT_LENGTH)
 
@@ -94,7 +139,7 @@ def main(args):
             y=y_train,
             batch_size=len(x_train),
             num_epochs=None,
-            shuffle=True)
+            shuffle=False)
 
         classifier.train(input_fn=train_input_fn, steps=10000, hooks=[summary_hook])
 
@@ -108,20 +153,21 @@ def main(args):
     # Score with tensorflow.
     scores = classifier.evaluate(input_fn=test_input_fn, steps=10000)
     print('Accuracy (tensorflow): {0:f}'.format(scores['accuracy']))
-    def _predict(text):
-        text_to_predict = text
-        text_to_predict = pandas.Series(text_to_predict)
-        text_to_predict = vocab_processor.fit_transform(text_to_predict)
-        text_to_predict = np.array(list(text_to_predict))
-        test_fn = tf.estimator.inputs.numpy_input_fn(
-            x={WORDS_FEATURE: text_to_predict},
-            num_epochs=1,
-            shuffle=False)
-        prediction = list(classifier.predict(input_fn=test_fn))
-        predicted_classes = [p['class'] for p in prediction]
-        return predicted_classes
-    return _predict
-
+    if FLAGS.server:
+        def _predict(text):
+            text_to_predict = text
+            text_to_predict = pandas.Series(text_to_predict)
+            text_to_predict = vocab_processor.fit_transform(text_to_predict)
+            text_to_predict = np.array(list(text_to_predict))
+            test_fn = tf.estimator.inputs.numpy_input_fn(
+                x={WORDS_FEATURE: text_to_predict},
+                num_epochs=1,
+                shuffle=False)
+            prediction = list(classifier.predict(input_fn=test_fn))
+            predicted_classes = [p['class'] for p in prediction]
+            return predicted_classes
+        return _predict
+    return None
 
 def get_class_dictionary():
     class_map = {}

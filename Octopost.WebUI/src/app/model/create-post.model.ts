@@ -1,4 +1,7 @@
 export class CreatePost {
-    constructor(public text: string) {
+    constructor(text: string) {
+        this.text = text;
     }
+
+    public text: string | undefined = undefined;
 }

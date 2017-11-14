@@ -21,3 +21,8 @@
     width: 100%;
     margin-top: 10px;
 }
+
+.post--container--component {
+    background-color: #CFD8DC;
+    overflow: hidden;
+}

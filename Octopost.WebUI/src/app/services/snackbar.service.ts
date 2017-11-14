@@ -11,9 +11,13 @@ export class SnackbarService {
     }
   }
 
-  public showMessage(message: string): void {
+  public showMessage(message: string, duration: number = 2000): void {
+    if (SnackbarService.snackBar === undefined) {
+      return;
+    }
+
     SnackbarService.snackBar.open(message, 'Dismiss', {
-      duration: 2000
+      duration: duration
     });
   }
 }

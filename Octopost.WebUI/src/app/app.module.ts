@@ -5,19 +5,22 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
 import { GlobalErrorHandler } from './global-error-handler';
 import {
-  MdButtonModule,
+  MatButtonModule,
   MatToolbarModule,
   MatTabsModule,
   MatCardModule,
-  MdInputModule,
-  MdDialogModule,
+  MatInputModule,
+  MatDialogModule,
   MatSnackBarModule,
   MatProgressSpinnerModule,
-  MatChipsModule
+  MatChipsModule,
+  MatProgressBarModule,
+  MatSelectModule
 } from '@angular/material';
 
 import * as comp from './components';
 import * as serv from './services';
+import * as pipe from './pipes';
 
 @NgModule({
   declarations: [
@@ -27,22 +30,26 @@ import * as serv from './services';
     comp.NewestPostsComponent,
     comp.TaggedPostsComponent,
     comp.PostContainerComponent,
-    comp.PostComponent
+    comp.PostComponent,
+    pipe.PrefixNumberPipe,
+    pipe.PostTagNamePipe
   ],
   imports: [
     BrowserModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MdButtonModule,
+    MatButtonModule,
     MatToolbarModule,
     MatTabsModule,
     MatCardModule,
-    MdInputModule,
+    MatInputModule,
     FormsModule,
-    MdDialogModule,
+    MatDialogModule,
     MatSnackBarModule,
     MatProgressSpinnerModule,
-    MatChipsModule
+    MatChipsModule,
+    MatProgressBarModule,
+    MatSelectModule
   ],
   providers: [
     serv.CreatePostService,

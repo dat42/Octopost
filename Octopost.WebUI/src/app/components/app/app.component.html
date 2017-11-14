@@ -1,26 +1,26 @@
 <div>
-    <md-toolbar color="primary">
+    <mat-toolbar color="primary">
         <div class="icon">
             <img src="/assets/img/octopost.png" alt="octopost" height="42" width="42">
         </div>
         <span>Octopost</span>   
-    </md-toolbar>
+    </mat-toolbar>
     <div class="octopost--create">
-        <button md-button (click)="showDialog()"><i class="material-icons">add</i></button>
-        <button md-button (click)="refresh()"><i class="material-icons">refresh</i></button>
+        <button mat-button (click)="showDialog()"><i class="material-icons">add</i></button>
+        <button mat-button (click)="refresh()"><i class="material-icons">refresh</i></button>
     </div>
-    <md-tab-group>
-        <md-tab label="Popular">
-            <app-popular-posts>
+    <mat-tab-group #tabGroup>
+        <mat-tab label="Popular">
+            <app-popular-posts #popular>
             </app-popular-posts>
-        </md-tab>
-        <md-tab label="Newest">
-            <app-newest-posts>
+        </mat-tab>
+        <mat-tab label="Newest">
+            <app-newest-posts #newest>
             </app-newest-posts>
-        </md-tab>
-        <md-tab label="By Tag">
-            <app-tagged-posts>
+        </mat-tab>
+        <mat-tab label="By Tag">
+            <app-tagged-posts #byTag>
             </app-tagged-posts>
-        </md-tab>
-    </md-tab-group>
+        </mat-tab>
+    </mat-tab-group>
 </div>

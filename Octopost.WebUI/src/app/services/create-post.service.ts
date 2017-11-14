@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { OctopostHttpService } from './octopost-http.service';
-import { CreatedResult, CreatePost } from '../model';
+import { CreatePost } from '../model';
+import { CreatedResult } from '../model/created-result.model';
 
 @Injectable()
 export class CreatePostService {
